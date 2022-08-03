@@ -2,29 +2,30 @@ import spacy
 
 npl = spacy.load('es_core_news_lg') # TODO: Ver de hacerlo mas global
 
-def translate(enunciado):
-    operaciones = {"suma": "+", "resta": "-"} # Aca deberia ir la palabra raiz nomas
-    doc = npl(enunciado)
-    problema = []
+def translate(statement):
+    operators = {"suma": "+", "resta": "-"} # Aca deberia ir la palabra raiz nomas
+    doc = npl(statement) # Agregar u?
+    mathProblem = []
     for token in doc:
         if token.pos_ in ["NOUN", "NUM"]:
-            problema.append(token)
+            mathProblem.append(token)
             # print(f"{token.text:{10}} {token.pos_:{10}} {token.is_stop:{10}} {spacy.explain(token.tag_)}")
     # print(problema)
-    def traduccion(token):
+
+    def translate(token):
       if token.pos_ == "NOUN":
-        return (operaciones[token.text], token)
+        return (operators[token.text], token)
       else: return (token.text, token)
-    problema_traducido = list(map(traduccion, problema))
+    translatedProblem = list(map(translate, mathProblem))
     # print(problema_traducido)
-    problema_traducido2 = []
-    for palabra, token in problema_traducido:
+    finalTranslatedProblem = []
+    for palabra, token in translatedProblem:
       if token.pos_ == "NOUN":
         noun = palabra
       else:
-        problema_traducido2.append(palabra)
-        problema_traducido2.append(noun)
-    problema_traducido2.pop()
+        finalTranslatedProblem.append(palabra)
+        finalTranslatedProblem.append(noun)
+    finalTranslatedProblem.pop()
     # print(problema_traducido2)
-    mi_ecuacion = ' '.join(problema_traducido2)
-    return mi_ecuacion
+    equation = ' '.join(finalTranslatedProblem)
+    return equation
