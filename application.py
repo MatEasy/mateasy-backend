@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 application = Flask(__name__)
 swagger = Swagger(application)
 
-import src.interpreters.addSubstractInterpreter as addSubstractInterpreter
+import src.service as service
 
 
 @application.route('/', methods=["GET"])
@@ -30,7 +30,7 @@ def mathtranslation():
     text = input_json['text']
 
     try:
-        equation = addSubstractInterpreter.translate(text)
-        return jsonify({"result": equation})
+        result = service.result(text)
+        return jsonify({"result": result})
     except:
         return jsonify({"error": "An exception occurred"}), 404
