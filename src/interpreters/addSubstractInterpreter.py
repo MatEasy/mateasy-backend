@@ -1,5 +1,4 @@
 import spacy
-from numerizer import numerize
 from recognizers_number import recognize_number, Culture
 
 npl = spacy.load('es_core_news_lg') # TODO: Ver de hacerlo mas global

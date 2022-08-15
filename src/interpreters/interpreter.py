@@ -5,7 +5,7 @@ import src.interpreters.simpleEquationInterpreter as simpleEquationInterpreter
 
 
 def interpret(prediction, statement):
-    if prediction == 1:
+    if prediction == 'suma':
         return addSubstractInterpreter.translate_statement(statement)
     if prediction == 2:
         return simpleEquationInterpreter.translate_statement(statement)
