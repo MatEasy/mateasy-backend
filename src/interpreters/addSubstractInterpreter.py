@@ -1,11 +1,8 @@
 import spacy
 from numerizer import numerize
-
-# from googletrans import Translator, constants
-# from pprint import pprint
+from recognizers_number import recognize_number, Culture
 
 npl = spacy.load('es_core_news_lg') # TODO: Ver de hacerlo mas global
-# translator = Translator() # init the Google API translator
 
 # TODO: Ver por que no funcionan estos enunciados
 # resta 3616 y 1095
@@ -17,7 +14,6 @@ def translate_statement(statement):
     mathProblem = []
     for token in doc:
         if token.pos_ in ["NOUN", "NUM"] or token.text.isnumeric():
-            #print('Encontre un numero ' + token.text)
             mathProblem.append(token)
         print(f"{token.text:{10}} {token.pos_:{10}} {token.is_stop:{10}} {spacy.explain(token.tag_)}")
 
@@ -35,10 +31,8 @@ def translate_statement(statement):
         if palabra.isnumeric():
             finalTranslatedProblem.append(palabra)
         else:
-            # translation = translator.translate(palabra)
-            # print('Esto NO es numerico ' + palabra + ' pero lo acabo de traducir ' + translation)
-            # print('Y aca esta numerizado ' + numerize(translation))
-            finalTranslatedProblem.append(numerize(palabra)) # TODO: Chequear que si es un numero palabra, transformar a numero posta
+            result = recognize_number(palabra, Culture.Spanish)[0].resolution["value"]
+            finalTranslatedProblem.append(result)
         finalTranslatedProblem.append(operator)
     finalTranslatedProblem.pop()
     equation = ' '.join(finalTranslatedProblem)
