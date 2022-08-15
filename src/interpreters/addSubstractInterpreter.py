@@ -1,31 +1,34 @@
 import spacy
-from numerizer import numerize
 from recognizers_number import recognize_number, Culture
 
 npl = spacy.load('es_core_news_lg') # TODO: Ver de hacerlo mas global
 
-# TODO: Ver por que no funcionan estos enunciados
-# resta 3616 y 1095
-# cual es el resultado de restar 3616 y 1095
-
 def translate_statement(statement):
+
+    def is_operator(token):
+        return token.text in list(operators.keys())
+
     operators = {"suma": "+", "resta": "-", "sumar": "+", "restar": "-", "más": "+", "mas": "+", "menos": "-"} # Aca deberia ir la palabra raiz nomas
     doc = npl(statement)
     mathProblem = []
     for token in doc:
-        if token.pos_ in ["NOUN", "NUM"] or token.text.isnumeric():
+        if token.pos_ == "NUM" or is_operator(token) or token.text.isnumeric():
             mathProblem.append(token)
         print(f"{token.text:{10}} {token.pos_:{10}} {token.is_stop:{10}} {spacy.explain(token.tag_)}")
 
     def translate(token):
-      if token.text in list(operators.keys()): # TODO: Agregar logica lemmatizar y abstraer
+      # TODO: Agregar logica lemmatizar
+      if is_operator(token):
+        print('Encontre un operador: ' + token.text)
         return (operators[token.text], token)
       else:
+        print('Encontre un numero: ' + token.text)
         return (token.text, token)
+
     translatedProblem = list(map(translate, mathProblem))
     finalTranslatedProblem = []
     for palabra, token in translatedProblem:
-      if token.text in list(operators.keys()):
+      if is_operator(token):
         operator = palabra
       else:
         if palabra.isnumeric():
@@ -37,13 +40,6 @@ def translate_statement(statement):
     finalTranslatedProblem.pop()
     equation = ' '.join(finalTranslatedProblem)
     return equation
-
-
-  #  def is_operator(token):
-  #        if token.text in list(operators.keys()):
-  #          return true
-  #        else:
-  #          return false
 
   # TODO: Definir lemmatization para las keys. Ojo con que:
   # Lemma de suma es suma, sumar es sumar, sumatoria es sumatoria (deberia poner todas)
