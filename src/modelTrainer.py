@@ -41,10 +41,11 @@ df['ejercicio'] = df['ejercicio'].apply(clean_text)
 
 #División del dataset
 
-
 X = df.ejercicio
 y = df.tag
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state = 42)
+
+#Modelo
 
 model = Pipeline([('vect', CountVectorizer()),
                ('tfidf', TfidfTransformer()),
