@@ -25,7 +25,6 @@ MarkupSafe==2.1.1
 mistune==2.0.3
 murmurhash==1.0.7
 numpy==1.23.1
-numerizer==0.2.1
 packaging==21.3
 pathy==0.6.2
 pep517==0.12.0

@@ -1,5 +1,5 @@
 # TODO integrar modelo
 
 def predict(statement):
-    return 1
+    return "suma"
 

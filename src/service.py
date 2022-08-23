@@ -7,5 +7,5 @@ def result(statement):
     # Limpiar tildes
     prediction = modelPredictor.predict(statement)
     equation = interpreter.interpret(prediction, statement)
-    result = equation  # result = profebot.resolution(equation) -> Cuando tengamos ProfeBot en el codigo
+    result = equation  # result = profebot.resolution(equation) -> TODO Cuando tengamos ProfeBot en el codigo
     return result
