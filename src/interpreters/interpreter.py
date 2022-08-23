@@ -1,5 +1,3 @@
-# TODO integrar modelo
-
 import src.interpreters.addSubstractInterpreter as addSubstractInterpreter
 import src.interpreters.simpleEquationInterpreter as simpleEquationInterpreter
 
