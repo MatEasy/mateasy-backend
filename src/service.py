@@ -6,6 +6,6 @@ def result(statement):
     # Si hay que hacer alguna limpieza del statement antes de llegar al predictor se hace aca
     # Limpiar tildes
     prediction = modelPredictor.predict(statement)
-    equation = interpreter.interpret("funcion-explicita", statement)  # TODO: Modificar
+    equation = interpreter.interpret("funcion-implicita", statement)  # TODO: Modificar
     result = equation  # result = profebot.resolution(equation) -> TODO Cuando tengamos ProfeBot en el codigo
     return result
