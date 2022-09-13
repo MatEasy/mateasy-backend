@@ -1,19 +1,22 @@
-init_characters = ["(", "{", "[", "F", "f", "x", "y", "X", "Y", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+import re
+
+init_characters = ["(", "{", "[", "f", "x", "y", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 end_characters = [")", "}", "]", "x", "y", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+pattern = re.compile(r"\s+")
 
 
-# TODO: Si no arranca con f(x) agregarselo
-# TODO: normalizar espacios al final de todo
-# Pasar todo a minuscula ni bien entra
+# Si no arranca con f(x) se le agrega -> Mejorar
 
 def translate_statement(statement):
+    statement = statement.lower()
     init_index = search_character(init_characters, statement) - 1  # TODO: Revisar
     end_index = len(statement) - search_character(end_characters, statement[::-1])
     equation = statement[init_index:end_index]
-    # Chequeo si esta igualado a f(x) -> Ver que hacer con caso y = (...)
-    # if not statement.replace(" ", "").contains("f(x)"):
-    #    equation = "f(x) = " + equation
-    return equation
+    if (not "f(x)" in equation and not "y =" in equation) or not "=" in equation:
+        equation = "f(x) = " + str(equation)
+    # Normalizo los espacios en blanco de la ecuacion
+    normalized_equation = pattern.sub("", equation)
+    return normalized_equation  # " ".join(normalized_equation) -> Ver de dejar acorde la parte de f(x)
 
 
 def search_character(characters, statement):
