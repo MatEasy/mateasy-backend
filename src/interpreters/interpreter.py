@@ -1,6 +1,7 @@
 import src.interpreters.addSubstractInterpreter as addSubstractInterpreter
 import src.interpreters.complexEquationInterpreter as complexEquationInterpreter
 import src.interpreters.simpleEquationInterpreter as simpleEquationInterpreter
+import src.interpreters.simpleFunctionInterpreter as simpleFunctionInterpreter
 
 
 def interpret(prediction, statement):
@@ -10,6 +11,8 @@ def interpret(prediction, statement):
         return Response("equation", simpleEquationInterpreter.translate_statement(statement))
     if prediction == "ecuacion-implicita":
         return Response("equation", complexEquationInterpreter.translate_statement(statement))
+    if prediction == "funcion-explicita":
+        return Response("function", simpleFunctionInterpreter.translate_statement(statement))
     else:  # TODO poner los demas interpreters
         return Response("ecuacion default", "x + 1 = 2")
 
