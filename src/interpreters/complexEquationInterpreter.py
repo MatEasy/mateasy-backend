@@ -101,8 +101,8 @@ class Node:
 def translate_statement(statement, tag):
     p1 = Node(statement)
     result = p1.resolve()
-    result2 = result[1:-1]
-    if "funcion" in statement:
-        return "f(x) = " + result2
+    final_result = result[1:-1]
+    if "funcion" in statement or tag == "Function":  # TODO: Mejorar
+        return final_result
     else:
-        return Response(result2, tag)
+        return Response(final_result, tag)
