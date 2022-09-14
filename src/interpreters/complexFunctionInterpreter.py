@@ -7,9 +7,10 @@ from recognizers_number import recognize_number, Culture
 import src.interpreters.complexEquationInterpreter as complexEquationInterpreter
 from src.interpreters.domain import Response
 
+#TODO vertice y punto https://www.youtube.com/watch?v=y8t6pfFYTd4
+
 npl = spacy.load('es_core_news_lg')
-# TODO derivar a cada sub interprtador de cada funcion segun estos 3 tipos de abajo
-# Si vienen los conceptos "ordenada" y "pendiente" -> resolucion 1 TODO: Si viene algo complejo, mandarlo al complex equation
+# Si vienen los conceptos "ordenada" y "pendiente" -> resolucion 1
 # Si vienen dos puntos -> resolucion 2
 # Si viene como ecuacion -> resolucion 3
 
@@ -21,7 +22,6 @@ pendiente = ["pendiente"]
 
 def translate_statement(statement, tag):
     statement = statement.lower()
-    # TODO ver a que tipo de funcion segun los 3 casos de arriba
     if "puntos" in statement:
         result = translate_simple_points_fun(statement)
         return Response(result, tag)
@@ -75,16 +75,21 @@ def search_number(statement):
 # .-------------------------------------------------------------------------------------------------------------------------
 
 # Funcion para resolver con dato puntos por los que pasa la funcion
-def translate_simple_points_fun(statement):  # TODO ver como escalar esto dependiendo de si es una cuadratica
-    # TODO leer alguna palabra clave que me haga dar cuenta q es cuadratica
+def translate_simple_points_fun(statement):  # TODO ver como escalar esto a cosas mas avanzadas que funcion cuadratica
+    quadratic = ["cuadratica", "parabola"]
+    is_quadratic = any(word in statement for word in quadratic)
     r = r"(-?\d+\.?\d*);(-?\d+\.?\d*)"
     points = re.findall(r, statement)
     print(points)
-
-    # TODO en una cuadratica es ax2 +bx +c => entonces tengo que hacer una lista de 3 elementos siendo el ultimo
-    #  siempre 1
+    if not is_quadratic:
+        points = points[:2]
+    #En una cuadratica es ax2 +bx +c => entonces tengo que hacer una lista de 3 elementos siendo el ultimo siempre 1
+    #https://stackabuse.com/solving-systems-of-linear-equations-with-pythons-numpy/
     def x(point):
-        return [float(point[0]), 1]
+        if is_quadratic:
+            return [float(point[0]) ** 2, float(point[0]), 1]
+        else:
+            return [float(point[0]), 1]
 
     def y(point):
         return float(point[1])
@@ -96,7 +101,14 @@ def translate_simple_points_fun(statement):  # TODO ver como escalar esto depend
     a = np.array(Xs)
     b = np.array(Ys)
     resolve = np.linalg.solve(a, b)
-    pendiente = round(resolve[0], 2)
-    ordenada = round(resolve[1], 2)
-    equation = "f(x) = " + str(pendiente) + " * x" + " + " + str(ordenada)  # TODO En una cuadratica cambia la formula
+    print(resolve)
+    if is_quadratic:
+        first = round(resolve[0], 2)
+        second = round(resolve[1], 2)
+        third = round(resolve[2], 2)
+        equation = "f(x) = " + str(first) + " * x^2" + " + " + str(second) + "x + " + str(third)
+    else:
+        pendiente = round(resolve[0], 2)
+        ordenada = round(resolve[1], 2)
+        equation = "f(x) = " + str(pendiente) + " * x" + " + " + str(ordenada)
     return equation
