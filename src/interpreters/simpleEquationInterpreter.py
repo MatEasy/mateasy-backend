@@ -1,15 +1,16 @@
-# TODO: Interpretar todo el abecedario como posible incognita
+from src.interpreters.domain import Response
+
 # Es caracter de inicio si -> ( o { o [ o incognita o numero
 init_characters = ["(", "{", "[", "x", "y", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 # Es caracter de fin si -> ) o }  o ] o incognita o numero
 end_characters = [")", "}", "]", "x", "y", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 
-def translate_statement(statement):
+def translate_statement(statement, tag):
     init_index = search_character(init_characters, statement)
     end_index = len(statement) - search_character(end_characters, statement[::-1])
     equation = statement[init_index:end_index]
-    return equation
+    return Response(equation, tag)
 
 
 def search_character(characters, statement):
