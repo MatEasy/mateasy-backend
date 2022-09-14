@@ -1,10 +1,12 @@
+import unidecode
+
 import src.interpreters.interpreter as interpreter
 import src.modelPredictor as modelPredictor
 
 
 def result(statement):
-    # Si hay que hacer alguna limpieza del statement antes de llegar al predictor se hace aca
-    # Limpiar tildes
+    statement = statement.lower()
+    statement = unidecode.unidecode(statement)
     prediction = modelPredictor.predict(statement)
     equation = interpreter.interpret("funcion-implicita", statement)  # TODO: Modificar
     return equation
