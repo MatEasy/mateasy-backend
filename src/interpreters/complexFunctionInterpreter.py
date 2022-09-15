@@ -54,7 +54,7 @@ def translate_intercept_and_slope_fun(statement, character):
     for token in second_part:
         if token.text in pendiente:
             slope = search_number(second_part)
-    equation = str(slope) + "x" + " + " + str(intercept)
+    equation = str(slope) + "*x" + " + " + str(intercept)
     return equation
 
 
@@ -87,7 +87,7 @@ def translate_simple_points_fun(statement):  # TODO ver como escalar esto a cosa
     def x(point):
         if is_quadratic:
             return [float(point[0]) ** 2, float(point[0]), 1]
-        if is_quadratic:
+        if is_cubic:
             return [float(point[0]) ** 3, float(point[0]) ** 2, float(point[0]), 1]
         else:
             return [float(point[0]), 1]
@@ -101,21 +101,22 @@ def translate_simple_points_fun(statement):  # TODO ver como escalar esto a cosa
     b = np.array(ys)
     resolve = np.linalg.solve(a, b)
     # TODO: Generalizar para polinomios de grado n
-    if is_quadratic:
-        first = format_number(round(resolve[0], 2))
-        second = format_number(round(resolve[1], 2))
-        third = format_number(round(resolve[2], 2))
-        equation = str(first) + "x^2" + " + " + str(second) + "x + " + str(third)
-    # if is_cubic:
-    #    first = format_number(round(resolve[0], 2))
-    #    second = format_number(round(resolve[1], 2))
-    #    third = format_number(round(resolve[2], 2))
-    #    fourth = format_number(round(resolve[3], 2))
-    #    equation = str(first) + "x^3" + " + " + str(second) + "x^2 + " + str(third) + "x" + " + " + str(fourth)
+    if is_quadratic or is_cubic:
+        if is_quadratic:
+            first = format_number(round(resolve[0], 2))
+            second = format_number(round(resolve[1], 2))
+            third = format_number(round(resolve[2], 2))
+            equation = str(first) + "*x^2" + " + " + str(second) + "*x + " + str(third)
+        else:
+            first = format_number(round(resolve[0], 2))
+            second = format_number(round(resolve[1], 2))
+            third = format_number(round(resolve[2], 2))
+            fourth = format_number(round(resolve[3], 2))
+            equation = str(first) + "*x^3" + " + " + str(second) + "*x^2 + " + str(third) + "*x" + " + " + str(fourth)
     else:
         slope = format_number(round(resolve[0], 2))
         intercept = format_number(round(resolve[1], 2))
-        equation = str(slope) + " * x" + " + " + str(intercept)
+        equation = str(slope) + "*x" + " + " + str(intercept)
     return equation
 
 
