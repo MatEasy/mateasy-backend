@@ -6,5 +6,5 @@ def result(statement):
     statement = statement.lower()
     # statement = unidecode.unidecode(statement)
     prediction = modelPredictor.predict(statement)
-    equation = interpreter.interpret("funcion-implicita", statement)  # TODO: Modificar
+    equation = interpreter.interpret("funcion-explicita", statement)  # TODO: Modificar
     return equation
