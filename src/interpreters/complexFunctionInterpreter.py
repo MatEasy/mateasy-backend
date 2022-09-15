@@ -61,7 +61,7 @@ def translate_intercept_and_slope_fun(statement, character):
 def search_number(statement):
     statement = npl(statement)
     for token in statement:
-        if token.pos_ == "NUM" or token.text.isnumeric() or is_negative_number(token.text):
+        if token.pos_ == "NUM" or token.text.isnumeric() or is_negative_or_float_number(token.text):
             if token.text.isnumeric():
                 return token.text
             else:  # Es un numero en palabras
@@ -69,8 +69,10 @@ def search_number(statement):
                 return number
 
 
-def is_negative_number(number):
-    return number[0] == '-' and len(number) > 1 and number[1:].isnumeric()
+def is_negative_or_float_number(number):
+    r = r'-?\d+[,.]?\d*'
+    is_float = re.match(number, r)
+    return (number[0] == '-' and len(number) > 1 and number[1:].isnumeric()) or is_float
 
 
 # .-------------------------------------------------------------------------------------------------------------------------
