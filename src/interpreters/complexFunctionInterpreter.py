@@ -19,7 +19,9 @@ pendiente = ["pendiente"]
 
 def translate_statement(statement, tag):
     # Si me dice la funcion que pasa por tales puntos
-    if "puntos" in statement:
+    # TODO: Si no viene la palabra punto/s?
+    # Ej: analiza la funcion que pasa por el origen y por P=(1;2)
+    if "puntos" in statement or "punto" in statement:
         result = translate_simple_points_fun(statement)
         return Response(result, tag)
     # Si es del tipo ord al origen y pendiente
@@ -85,6 +87,13 @@ def translate_simple_points_fun(statement):  # TODO ver como escalar esto a cosa
     is_quadratic = any(word in statement for word in quadratic)
     is_cubic = any(word in statement for word in cubic)
     points = re.findall(r, statement)
+    print("PUNTOS")
+    print(points)
+    if "origen" in statement:  # TODO: Mejorar
+        origin = re.findall(r, "(0;0)")[0]
+        points.append(origin)
+    print("PUNTOS CON ORIGEN")
+    print(points)
     if not is_quadratic and not is_cubic:
         points = points[:2]
 
