@@ -34,7 +34,7 @@ def translate_statement(statement, tag):
         return Response(result, tag)
 
 
-# TODO: Revisar numeros con coma y negativos
+# TODO: Revisar numeros con coma
 # Funcion para resolver funciones lineales cuando nos dan el dato de la ordenada al origen y la pendiente
 def translate_intercept_and_slope_fun(statement, character):
     divided_statement = statement.split(character)
@@ -61,12 +61,16 @@ def translate_intercept_and_slope_fun(statement, character):
 def search_number(statement):
     statement = npl(statement)
     for token in statement:
-        if token.pos_ == "NUM" or token.text.isnumeric():
+        if token.pos_ == "NUM" or token.text.isnumeric() or is_negative_number(token.text):
             if token.text.isnumeric():
                 return token.text
             else:  # Es un numero en palabras
                 number = recognize_number(token.text, Culture.Spanish)[0].resolution["value"]
                 return number
+
+
+def is_negative_number(number):
+    return number[0] == '-' and len(number) > 1 and number[1:].isnumeric()
 
 
 # .-------------------------------------------------------------------------------------------------------------------------
