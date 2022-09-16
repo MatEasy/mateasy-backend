@@ -7,17 +7,21 @@ from recognizers_number import recognize_number, Culture
 import src.interpreters.complexEquationInterpreter as complexEquationInterpreter
 from src.interpreters.domain import Response
 
-# TODO: ver ejercicios del estilo vertice y punto https://www.youtube.com/watch?v=y8t6pfFYTd4
-
 npl = spacy.load('es_core_news_lg')
 
 dividing_characters = ["y", ",", "-", "/"]  # TODO: Se puede replicar con la logica del find_near_operator?
-ordenada_al_origen = ["ordenada", "ord.", "ordenada al origen", "ord. al origen", "ord al origen",
-                      "ordenada en el origen", "ord en el origen", "ord. en el origen"]
-pendiente = ["pendiente"]
+intercepts = ["ordenada", "ord.", "ordenada al origen", "ord. al origen", "ord al origen",
+              "ordenada en el origen", "ord en el origen", "ord. en el origen"]
+slopes = ["pendiente"]
 
 
 def translate_statement(statement, tag):
+    # Si es una parabola con vertice y punto
+    if "vertice" in statement:  # TODO: Alguna palabra mas?
+        for character in dividing_characters:
+            if character in statement:
+                result = translate_vertex_point_fun(statement, character)
+                return Response(result, tag)
     # Si me dice la funcion que pasa por tales puntos
     # TODO: Si no viene la palabra punto/s?
     # Ej: analiza la funcion que pasa por el origen y por P=(1;2)
@@ -25,7 +29,7 @@ def translate_statement(statement, tag):
         result = translate_simple_points_fun(statement)
         return Response(result, tag)
     # Si es del tipo ord al origen y pendiente
-    if any(word in statement for word in ordenada_al_origen + pendiente):
+    if any(word in statement for word in intercepts + slopes):
         for character in dividing_characters:
             if character in statement:
                 result = translate_intercept_and_slope_fun(statement, character)
@@ -44,17 +48,17 @@ def translate_intercept_and_slope_fun(statement, character):
     second_part = npl(divided_statement[1])
     # Analisis de la primera parte
     for token in first_part:
-        if token.text in ordenada_al_origen:
+        if token.text in intercepts:
             intercept = search_number(first_part)
     for token in first_part:
-        if token.text in pendiente:
+        if token.text in slopes:
             slope = search_number(first_part)
     # Analisis de la segunda parte
     for token in second_part:
-        if token.text in ordenada_al_origen:
+        if token.text in intercepts:
             intercept = search_number(second_part)
     for token in second_part:
-        if token.text in pendiente:
+        if token.text in slopes:
             slope = search_number(second_part)
     equation = str(slope) + "*x" + " + " + str(intercept)
     return equation
@@ -81,24 +85,18 @@ def is_negative_or_float_number(number):
 
 # Funcion para resolver con dato puntos por los que pasa la funcion
 def translate_simple_points_fun(statement):  # TODO ver como escalar esto a cosas mas avanzadas que funcion cuadratica
-    r = r"(-?\d+\.?\d*)[;,] *(-?\d+\.?\d*)"
     quadratic = ["cuadratica", "parabola"]
+    # TODO: grado 3? -> Esto estaria bueno agregarlo p/ polinomios en gral y generalizar el armado de la eq
     cubic = ["cubica"]
     is_quadratic = any(word in statement for word in quadratic)
     is_cubic = any(word in statement for word in cubic)
-    points = re.findall(r, statement)
-    print("PUNTOS")
-    print(points)
+    points = search_points(statement)
     if "origen" in statement:  # TODO: Mejorar
-        origin = re.findall(r, "(0;0)")[0]
+        origin = search_points("(0;0)")[0]
         points.append(origin)
-    print("PUNTOS CON ORIGEN")
-    print(points)
     if not is_quadratic and not is_cubic:
         points = points[:2]
 
-    # En una cuadratica es ax2 + bx + c => Tengo que hacer una lista de 3 elementos, siendo el ultimo siempre 1
-    # https://stackabuse.com/solving-systems-of-linear-equations-with-pythons-numpy/
     def x(point):
         if is_quadratic:
             return [float(point[0]) ** 2, float(point[0]), 1]
@@ -133,6 +131,39 @@ def translate_simple_points_fun(statement):  # TODO ver como escalar esto a cosa
         intercept = format_number(round(resolve[1], 2))
         equation = str(slope) + "*x" + " + " + str(intercept)
     return equation
+
+
+# .-------------------------------------------------------------------------------------------------------------------------
+
+# Funcion para resolver cuadratica con dato vértice y punto
+def translate_vertex_point_fun(statement, word):
+    divided_statement = statement.split(word)
+    first_part = divided_statement[0]
+    second_part = divided_statement[1]
+    # Analisis de la primera parte
+    if "vertice" in first_part:
+        vertex = search_points(first_part)[0]
+    if "punto" in first_part:
+        point = search_points(first_part)[0]
+    # Analisis de la segunda parte
+    if "vertice" in second_part:
+        vertex = search_points(second_part)[0]
+    if "punto" in second_part:
+        point = search_points(second_part)[0]
+    # Asigno valores: x, y, xv, yv
+    x = format_number(float(point[0]))
+    y = format_number(float(point[1]))
+    xv = format_number(float(vertex[0]))
+    yv = format_number(float(vertex[1]))
+    # Calculo a
+    a = format_number((y - yv) / ((x - xv) * (x - xv)))
+    equation = str(a) + "*(x - " + str(xv) + ")^2 + " + str(yv)  # TODO: Mejorar este armado de ecuacion
+    return equation
+
+
+def search_points(statement):
+    r = r"(-?\d+\.?\d*)[;,] *(-?\d+\.?\d*)"
+    return re.findall(r, statement)
 
 
 def format_number(number):
