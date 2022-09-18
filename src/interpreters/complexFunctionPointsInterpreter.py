@@ -12,12 +12,11 @@ def translate_statement(statement, tag):
         for character in dividing_characters:
             if character in statement:
                 result = translate_vertex_point_fun(statement, character)
-                return Response(result, tag)
     # Si me dice la funcion que pasa por tales puntos
     # TODO: Si no viene la palabra punto/s? Ej: analiza la funcion que pasa por el origen y por P=(1;2)
-    if "puntos" in statement or "punto" in statement:
+    else:
         result = translate_simple_points_fun(statement)
-        return Response(result, tag)
+    return Response(result, tag)
 
 
 # Funcion para resolver cuadratica con dato vértice y punto

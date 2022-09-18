@@ -16,7 +16,7 @@ def interpret(prediction, statement):
         return complexEquationInterpreter.translate_statement(statement, "Equation")
     if prediction == "funcion-explicita":
         return simpleFunctionInterpreter.translate_statement(statement, "Function")
-    if prediction == "funcion-implicita-puntos":
+    if prediction == "funcion-implicita-vertice" or prediction == "funcion-implicita-puntos":
         return complexFunctionPointsInterpreter.translate_statement(statement, "Function")
     if prediction == "funcion-implicita-po":
         return complexFunctionSlopeInterceptInterpreter.translate_statement(statement, "Function")
