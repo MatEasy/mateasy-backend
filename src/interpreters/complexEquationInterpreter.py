@@ -4,7 +4,6 @@ from recognizers_number import recognize_number, Culture
 from src.interpreters.domain import Response
 
 npl = spacy.load('es_core_news_lg')
-# TODO: Ver como tomar el mayor o igual o menor o igual siendo varias palabras? -> Cargarlo al diccionario de spacy?
 first_order_operators_dictionary = {"mayor o igual": ">=", "menor o igual": "<=", "igual": "=", "mayor": ">",
                                     "menor": "<"}
 dividing_words = ["y"]
@@ -13,13 +12,16 @@ dividing_by_proximity_words = [
 second_order_operators_dictionary = {"mas": "+", "menos": "-", "suma": "+", "sumado": "+", "resta": "-", "restado": "-"}
 third_order_operators_dictionary = {"por": "*", "dividido": "/", "multiplicacion": "*", "division": "/",
                                     "multiplicado": "*"}  # TODO: multiplicado por
+operators_left_dictionary = {"triple": "3 *", "doble": "2 *", "cuadruple": "4 *", "quintuple": "5 *",
+                             "sextuple": "6 *"}  # TODO: Ver caso cuarto, mitad
+operators_right_dictionary = {"triplicado": "* 3", "duplicado": "* 2", "cuadruplicado": "* 4", "quintuplicado": "* 5",
+                              "sextuplicado": "* 6"}  # TODO: Completar
 operators_dictionary = {}
 operators_dictionary.update(first_order_operators_dictionary)
 operators_dictionary.update(second_order_operators_dictionary)
 operators_dictionary.update(third_order_operators_dictionary)
-
-
-# 3 *
+operators_dictionary.update(operators_left_dictionary)
+operators_dictionary.update(operators_right_dictionary)
 
 
 def find_near_operator(dividing_word, sentence):
@@ -57,7 +59,12 @@ def search_math_term(sentence):
                 return "operator", near_operator, "divisory_proximity"
     for operator in operators_dictionary.keys():
         if operator in statement.text:
-            return "operator", operator, "secondary_order"
+            word_type = "operator"
+            if operator in operators_left_dictionary.keys():
+                word_type = "operator_left"
+            elif operator in operators_right_dictionary.keys():
+                word_type = "operator_right"
+            return word_type, operator, "secondary_order"
     # Si no salio por encontrar ningun operador, busco numero o incognita
     for token in statement:
         if token.pos_ == "NUM" or token.text.isnumeric():
@@ -75,12 +82,12 @@ class Node:
     def __init__(self, sentence):
         word_type, word, order = search_math_term(sentence)
         if word_type == "operator":
+            # Si es de 1er orden, puede estar el caso de "mayor o igual" que quiero quedarme con toda la expresion
             if order == "first_order":
-                asd = word
-            else:
-                asd = word.split()[-1]
-            operator = operators_dictionary[asd]  # Busco el operador que se corresponde con la palabra
-            print(operator)
+                value = word
+            else:  # Si hay un "y multiplicado" yo solo quiero tomar el ultimo (multiplicado)
+                value = word.split()[-1]
+            operator = operators_dictionary[value]  # Busco el operador que se corresponde con la palabra
             parts_of_sentence = sentence.split(word)
             parts_number = len(parts_of_sentence)
             if parts_number > 2:  # Al splitear encontro mas de una ocurrencia
@@ -93,6 +100,17 @@ class Node:
                 self.operator = operator
                 self.left_node = Node(parts_of_sentence[0])
                 self.right_node = Node(parts_of_sentence[1])
+        # Casos operadores especiales
+        elif word_type == "operator_left":  # Si tengo un caso como "el triple de 2"
+            parts_of_sentence = sentence.split(word)
+            self.operator = operators_left_dictionary[word]
+            self.left_node = None
+            self.right_node = Node(parts_of_sentence[1])
+        elif word_type == "operator_right":  # Si tengo un caso como "2 triplicado"
+            parts_of_sentence = sentence.split(word)
+            self.operator = operators_right_dictionary[word]
+            self.left_node = Node(parts_of_sentence[0])
+            self.right_node = None
         else:
             self.operator = word
             self.left_node = None
@@ -103,7 +121,7 @@ class Node:
             return self.operator
         elif self.left_node is None and self.right_node is not None:  # Si tengo un caso como "el doble de 2"
             return "(" + self.operator + " " + self.right_node.resolve() + ")"
-        elif self.left_node is not None and self.right_node is None: # Si tengo un caso como "2 duplicado"
+        elif self.left_node is not None and self.right_node is None:  # Si tengo un caso como "2 duplicado"
             return "(" + self.left_node.resolve() + " " + self.operator + ")"
         else:
             return "(" + self.left_node.resolve() + " " + self.operator + " " + self.right_node.resolve() + ")"
