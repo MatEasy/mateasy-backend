@@ -5,7 +5,7 @@ from src.interpreters.domain import Response
 
 npl = spacy.load('es_core_news_lg')
 # TODO: Ver como tomar el mayor o igual o menor o igual siendo varias palabras? -> Cargarlo al diccionario de spacy?
-first_order_operators_dictionary = {"igual": "=", "mayor o igual": ">=", "menor o igual": "<=", "mayor": ">",
+first_order_operators_dictionary = {"mayor o igual": ">=", "menor o igual": "<=", "igual": "=", "mayor": ">",
                                     "menor": "<"}
 dividing_words = ["y"]
 dividing_by_proximity_words = [
@@ -17,6 +17,9 @@ operators_dictionary = {}
 operators_dictionary.update(first_order_operators_dictionary)
 operators_dictionary.update(second_order_operators_dictionary)
 operators_dictionary.update(third_order_operators_dictionary)
+
+
+# 3 *
 
 
 def find_near_operator(dividing_word, sentence):
@@ -35,7 +38,7 @@ def search_math_term(sentence):
     statement = npl(sentence)
     for operator in first_order_operators_dictionary.keys():
         if operator in statement.text:
-            return "operator", operator
+            return "operator", operator, "first_order"
     for word in dividing_words:
         if word in statement.text:
             start_index_word = statement.text.rfind(word)
@@ -43,7 +46,7 @@ def search_math_term(sentence):
             right_sentence = statement.text[end_index_word:-1]
             near_operator = find_near_operator(word, right_sentence)
             if near_operator is not None:
-                return "operator", near_operator
+                return "operator", near_operator, "divisory"
     for word in dividing_by_proximity_words:
         if word in statement.text:
             start_index_word = statement.text.rfind(word)
@@ -51,28 +54,33 @@ def search_math_term(sentence):
             right_sentence = statement.text[end_index_word:-1]
             near_operator = find_near_operator(word, right_sentence)
             if near_operator is not None:
-                return "operator", near_operator
+                return "operator", near_operator, "divisory_proximity"
     for operator in operators_dictionary.keys():
         if operator in statement.text:
-            return "operator", operator
+            return "operator", operator, "secondary_order"
     # Si no salio por encontrar ningun operador, busco numero o incognita
     for token in statement:
         if token.pos_ == "NUM" or token.text.isnumeric():
             if token.text.isnumeric():
-                return "leaf", token.text
+                return "leaf", token.text, "last_order"
             else:  # Es un numero en palabras
                 number = recognize_number(token.text, Culture.Spanish)[0].resolution["value"]
-                return "leaf", number
+                return "leaf", number, "last_order"
     else:
-        return "leaf", "x"  # TODO
+        return "leaf", "x", "last_order"  # TODO
 
 
 class Node:
 
     def __init__(self, sentence):
-        word_type, word = search_math_term(sentence)
+        word_type, word, order = search_math_term(sentence)
         if word_type == "operator":
-            operator = operators_dictionary[word.split()[-1]]  # Busco el operador que se corresponde con la palabra
+            if order == "first_order":
+                asd = word
+            else:
+                asd = word.split()[-1]
+            operator = operators_dictionary[asd]  # Busco el operador que se corresponde con la palabra
+            print(operator)
             parts_of_sentence = sentence.split(word)
             parts_number = len(parts_of_sentence)
             if parts_number > 2:  # Al splitear encontro mas de una ocurrencia
@@ -91,9 +99,12 @@ class Node:
             self.right_node = None
 
     def resolve(self):
-        # Existe un caso donde haya un hijo izquierdo en None y el otro no?
         if self.left_node is None and self.right_node is None:
             return self.operator
+        elif self.left_node is None and self.right_node is not None:  # Si tengo un caso como "el doble de 2"
+            return "(" + self.operator + " " + self.right_node.resolve() + ")"
+        elif self.left_node is not None and self.right_node is None: # Si tengo un caso como "2 duplicado"
+            return "(" + self.left_node.resolve() + " " + self.operator + ")"
         else:
             return "(" + self.left_node.resolve() + " " + self.operator + " " + self.right_node.resolve() + ")"
 
