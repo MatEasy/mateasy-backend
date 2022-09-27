@@ -19,9 +19,6 @@ operators_dictionary.update(second_order_operators_dictionary)
 operators_dictionary.update(third_order_operators_dictionary)
 
 
-# 3 *
-
-
 def find_near_operator(dividing_word, sentence):
     spliting_phrase = dividing_word
     statement = npl(sentence)
