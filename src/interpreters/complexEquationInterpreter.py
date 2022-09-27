@@ -11,8 +11,8 @@ dividing_words = ["y"]
 dividing_by_proximity_words = [
     "todo esto ultimo"]  # TODO: El caso "y todo esto ultimo" me va a complicar, revisar como tomarlo
 second_order_operators_dictionary = {"mas": "+", "menos": "-", "suma": "+", "sumado": "+", "resta": "-", "restado": "-"}
-third_order_operators_dictionary = {"por": "*", "dividido": "/", "multiplicacion": "*", "division": "/",
-                                    "multiplicado": "*"}  # TODO: multiplicado por
+third_order_operators_dictionary = {"multiplicado por": "*", "por": "*", "dividido": "/", "multiplicacion": "*",
+                                    "division": "/", "multiplicado": "*"}
 operators_dictionary = {}
 operators_dictionary.update(first_order_operators_dictionary)
 operators_dictionary.update(second_order_operators_dictionary)
@@ -76,11 +76,10 @@ class Node:
         word_type, word, order = search_math_term(sentence)
         if word_type == "operator":
             if order == "first_order":
-                asd = word
+                value = word
             else:
-                asd = word.split()[-1]
-            operator = operators_dictionary[asd]  # Busco el operador que se corresponde con la palabra
-            print(operator)
+                value = word.split()[-1]
+            operator = operators_dictionary[value]  # Busco el operador que se corresponde con la palabra
             parts_of_sentence = sentence.split(word)
             parts_number = len(parts_of_sentence)
             if parts_number > 2:  # Al splitear encontro mas de una ocurrencia
@@ -103,7 +102,7 @@ class Node:
             return self.operator
         elif self.left_node is None and self.right_node is not None:  # Si tengo un caso como "el doble de 2"
             return "(" + self.operator + " " + self.right_node.resolve() + ")"
-        elif self.left_node is not None and self.right_node is None: # Si tengo un caso como "2 duplicado"
+        elif self.left_node is not None and self.right_node is None:  # Si tengo un caso como "2 duplicado"
             return "(" + self.left_node.resolve() + " " + self.operator + ")"
         else:
             return "(" + self.left_node.resolve() + " " + self.operator + " " + self.right_node.resolve() + ")"
