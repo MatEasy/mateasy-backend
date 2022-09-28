@@ -10,8 +10,8 @@ dividing_words = ["y"]
 dividing_by_proximity_words = [
     "todo esto ultimo"]  # TODO: El caso "y todo esto ultimo" me va a complicar, revisar como tomarlo
 second_order_operators_dictionary = {"mas": "+", "menos": "-", "suma": "+", "sumado": "+", "resta": "-", "restado": "-"}
-third_order_operators_dictionary = {"por": "*", "dividido": "/", "multiplicacion": "*", "division": "/",
-                                    "multiplicado": "*"}  # TODO: multiplicado por
+third_order_operators_dictionary = {"multiplicado por": "*", "por": "*", "dividido": "/", "multiplicacion": "*",
+                                    "division": "/", "multiplicado": "*"}
 operators_left_dictionary = {"triple": "3 *", "doble": "2 *", "cuadruple": "4 *", "quintuple": "5 *",
                              "sextuple": "6 *"}  # TODO: Ver caso cuarto, mitad
 operators_right_dictionary = {"triplicado": "* 3", "duplicado": "* 2", "cuadruplicado": "* 4", "quintuplicado": "* 5",
