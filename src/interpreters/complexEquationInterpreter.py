@@ -2,7 +2,7 @@ import re
 
 import spacy
 from recognizers_number import recognize_number, Culture
-
+import src.interpreters.addSubstractInterpreter as addSubstractInterpreter
 from src.interpreters.domain import Response
 
 npl = spacy.load('es_core_news_lg')
@@ -18,8 +18,10 @@ operators_left_dictionary = {"triple": "3 *", "doble": "2 *", "cuadruple": "4 *"
                              "sextuple": "6 *"}  # TODO: Ver caso cuarto, mitad
 operators_right_dictionary = {"triplicado": "* 3", "duplicado": "* 2", "cuadruplicado": "* 4", "quintuplicado": "* 5",
                               "sextuplicado": "* 6", "cuadrado": "^2", "cubo": "^3"}  # TODO: Completar
+operators_left_dictionary_to_delegate_add_substract = {"sumatoria": "+", "diferencia": "-"}
 operators_dictionary = {}
 operators_dictionary.update(first_order_operators_dictionary)
+operators_dictionary.update(operators_left_dictionary_to_delegate_add_substract)
 operators_dictionary.update(second_order_operators_dictionary)
 operators_dictionary.update(third_order_operators_dictionary)
 operators_dictionary.update(operators_left_dictionary)
@@ -27,15 +29,24 @@ operators_dictionary.update(operators_right_dictionary)
 
 
 def find_near_operator(dividing_word, sentence):
+    print("l:")
+    print(dividing_word)
+    print(sentence)
     for operator in operators_dictionary.keys():
         operator_occurence_index = sentence.find(operator)
         if operator_occurence_index != -1:
+            print("a")
             r = r"-?\d+\.?\d*"
             # TODO si hay un numero en palabras no se va a encontrar aca
             if re.search(r, sentence).start() < operator_occurence_index:
+                print("b")
                 return None
             else:
+                print("c")
                 return dividing_word + sentence[:operator_occurence_index + len(operator)]
+        else:
+            print("no encontre operador despues de palabra divisoria")
+            return None
 
 
 def search_math_term(sentence):
@@ -61,8 +72,13 @@ def search_math_term(sentence):
                 return "operator", near_operator, "divisory_proximity"
     for operator in operators_dictionary.keys():
         if operator in statement.text:
+            print("entre porque encontre un operadort y por que me gusta la pija")
+            print(operator)
             word_type = "operator"
-            if operator in operators_left_dictionary.keys():
+            if operator in operators_left_dictionary_to_delegate_add_substract.keys():
+                print("entre en sumatoria")
+                word_type = "operator_left_delegate_add_substract"
+            elif operator in operators_left_dictionary.keys():
                 word_type = "operator_left"
             elif operator in operators_right_dictionary.keys():
                 word_type = "operator_right"
@@ -103,6 +119,17 @@ class Node:
                 self.left_node = Node(parts_of_sentence[0])
                 self.right_node = Node(parts_of_sentence[1])
         # Casos operadores especiales
+        elif word_type == "operator_left_delegate_add_substract":  # Sumatoria de 5 y 5"
+            parts_of_sentence = sentence.split(word)
+            print("WORD")
+            print(word)
+            print(word + parts_of_sentence[1])
+            print("AAA")
+            print(addSubstractInterpreter.translate_statement(word + parts_of_sentence[1], "equation").expression)
+            #lo de right node lo tenia en self operator y lo demas en none y mal q mal funcionaba algo solo q no derivaba bien lo de izq y derecha
+            self.operator = operators_dictionary[word]
+            self.left_node = Node(parts_of_sentence[0])
+            self.right_node = addSubstractInterpreter.translate_statement(word + parts_of_sentence[1], "equation").expression
         elif word_type == "operator_left":  # Si tengo un caso como "el triple de 2"
             parts_of_sentence = sentence.split(word)
             self.operator = operators_left_dictionary[word]
