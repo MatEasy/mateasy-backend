@@ -35,17 +35,13 @@ def find_near_operator(dividing_word, sentence):
     for operator in operators_dictionary.keys():
         operator_occurence_index = sentence.find(operator)
         if operator_occurence_index != -1:
-            print("a")
             r = r"-?\d+\.?\d*"
             # TODO si hay un numero en palabras no se va a encontrar aca
             if re.search(r, sentence).start() < operator_occurence_index:
-                print("b")
                 return None
             else:
-                print("c")
                 return dividing_word + sentence[:operator_occurence_index + len(operator)]
         else:
-            print("no encontre operador despues de palabra divisoria")
             return None
 
 
@@ -72,11 +68,8 @@ def search_math_term(sentence):
                 return "operator", near_operator, "divisory_proximity"
     for operator in operators_dictionary.keys():
         if operator in statement.text:
-            print("entre porque encontre un operadort y por que me gusta la pija")
-            print(operator)
             word_type = "operator"
             if operator in operators_left_dictionary_to_delegate_add_substract.keys():
-                print("entre en sumatoria")
                 word_type = "operator_left_delegate_add_substract"
             elif operator in operators_left_dictionary.keys():
                 word_type = "operator_left"
