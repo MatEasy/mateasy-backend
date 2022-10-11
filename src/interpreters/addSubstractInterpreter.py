@@ -8,7 +8,7 @@ def translate_statement(statement, tag):
     def is_operator(token):
         return token.text in list(operators.keys())
 
-    operators = {"suma": "+", "resta": "-", "sumar": "+", "restar": "-", "más": "+", "mas": "+", "menos": "-", "sumatoria": "+"} # Aca deberia ir la palabra raiz nomas
+    operators = {"suma": "+", "resta": "-", "sumar": "+", "restar": "-", "más": "+", "mas": "+", "menos": "-", "sumatoria": "+", "diferencia": "-"} # Aca deberia ir la palabra raiz nomas
     doc = npl(statement)
     mathProblem = []
     for token in doc:
