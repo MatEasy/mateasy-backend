@@ -5,5 +5,5 @@ import src.modelPredictor as modelPredictor
 def result(statement):
     statement = statement.lower()
     prediction = modelPredictor.predict(statement)
-    equation = interpreter.interpret("ecuacion-implicita", statement)
+    equation = interpreter.interpret(prediction, statement)
     return equation
