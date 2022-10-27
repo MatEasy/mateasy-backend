@@ -1,12 +1,12 @@
 from flasgger import swag_from, Swagger
 from flask import Flask, request, jsonify
 
-import src.service as service
 from src.modelTrainer import model, X_train, y_train
 
 application = Flask(__name__)
 swagger = Swagger(application)
 
+import src.service as service
 
 @application.before_first_request
 def before_first_request():
@@ -16,14 +16,7 @@ def before_first_request():
 @application.route('/', methods=["GET"])
 @swag_from('./config/swagger.yml')
 def helloworld():
-    return jsonify('Hello World!')
-
-
-@application.route('/api/ping', methods=["GET"])
-@swag_from('./config/swagger.yml')
-def pingpong():
-    return jsonify('pong')
-
+    return jsonify('Ok!')
 
 @application.route('/api/math-translation', methods=["POST"])
 @swag_from('./config/swagger.yml')
@@ -37,7 +30,9 @@ def mathtranslation():
 
     try:
         result = service.result(text)
+        print("La expresion matematica del enunciado: " + text + " es: " + result.expression + " y su tag es: " + result.tag)        
         json = {"result": {"tag": result.tag, "expression": result.expression}}
         return jsonify(json)
     except:
+        print("Error con el enunciado: ", text)
         return jsonify({"error": "An exception occurred"}), 404
