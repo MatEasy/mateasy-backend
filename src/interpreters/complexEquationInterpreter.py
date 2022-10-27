@@ -15,7 +15,8 @@ dividing_words = ["y"]
 dividing_by_proximity_words = [
     "todo esto ultimo"]  # TODO: El caso "y todo esto ultimo" me va a complicar, revisar como tomarlo
 second_order_operators_dictionary = {"mas": "+", "menos": "-", "restado": "-", "resta": "-", "sumado": "+"}
-operators_left_dictionary_to_delegate_add_substract = {"sumatoria": "+", "diferencia": "-"}
+operators_left_dictionary_to_delegate_add_substract = {"sumatoria": "+", "diferencia": "-",
+                                                       "suma": "+", "resta": "-"} # TODO: Revisar
 second_second_order_operators_dictionary = {"suma": "+"}  # dividido para no pisar sumatoria
 third_order_operators_dictionary = {"multiplicado por": "*", "por": "*", "dividido": "/", "multiplicacion": "*",
                                     "division": "/", "multiplicado": "*", "sobre": "/"}

@@ -9,7 +9,7 @@ from src.interpreters.domain import Response
 
 def interpret(prediction, statement):
     if prediction == "suma" or prediction == "resta":
-        return addSubstractInterpreter.translate_statement(statement, "Equation")
+        return simpleEquationInterpreter.translate_statement(statement, "Equation")
     if prediction == "ecuacion-explicita":
         return simpleEquationInterpreter.translate_statement(statement, "Equation")
     if prediction == "ecuacion-implicita":
