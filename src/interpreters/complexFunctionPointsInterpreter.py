@@ -1,5 +1,4 @@
 import numpy as np
-import unidecode
 
 from src.interpreters.domain import Response
 from src.utils import format_number, search_points
