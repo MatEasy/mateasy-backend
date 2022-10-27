@@ -9,6 +9,7 @@ dividing_characters = ["y", ",", "-", "/"]  # TODO: Se puede replicar con la log
 
 def translate_statement(statement, tag):
     # Si es una parabola con vertice y punto
+    print("statement")
     if "vertice" in statement:  # TODO: Alguna palabra mas? -> Se puede borrar una vez que este el modelo
         for character in dividing_characters:
             if character in statement:
