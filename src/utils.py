@@ -6,13 +6,24 @@ from recognizers_number import recognize_number, Culture
 npl = spacy.load('es_core_news_lg')
 
 
+def is_valid_statement(statement):
+    statement = npl(statement)
+    for token in statement:
+        if token.pos_ == "NUM":
+            return True
+        if token.text.isnumeric():
+            return True
+        # TODO: Check numeros con coma y negativos, string is numeric?
+    return False
+
+
 def search_points(statement):
     r = r"(-?\d+\.?\d*)[;,] *(-?\d+\.?\d*)"
     return re.findall(r, statement)
 
 
 # Check that string doesn't have any letters, only numbers and . or ,
-def string_is_numeric(token):
+def string_is_numeric(token):  # TODO: Se puede unificar con is_negative_or_float_number ?
     r1 = r"\d*\,?\d*"
     r2 = r"\d*\.?\d*"
     letters = r"[a-zA-Z]"
