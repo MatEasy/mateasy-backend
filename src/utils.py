@@ -11,12 +11,20 @@ def search_points(statement):
     return re.findall(r, statement)
 
 
+# Check that string doesn't have any letters, only numbers and . or ,
+def string_is_numeric(token):
+    r1 = r"\d*\,?\d*"
+    r2 = r"\d*\.?\d*"
+    letters = r"[a-zA-Z]"
+    return (re.match(r1, token) or re.match(r2, token)) and re.search(letters, token) is None
+
+
 def format_number(number):
     number = float(number)
     if number.is_integer():
         return int(number)
     else:
-        return round(float(number), 6)
+        return round(float(number), 3)
 
 
 def search_number(statement):
