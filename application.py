@@ -30,7 +30,10 @@ def mathtranslation():
     input_json = request.get_json()  # get the json from the request
 
     text = input_json['text']
+    # FIXME
     if not is_valid_statement(text):
+        print("ES ENUNCIADO VALIDO?")
+        print(is_valid_statement(text))
         return jsonify({"error": "Invalid input - A mathematical statement is required"}), 400
 
     try:
