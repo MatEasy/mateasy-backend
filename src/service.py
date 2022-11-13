@@ -7,7 +7,7 @@ from src.utils import get_root_of_equation, get_exponent_of_equation
 def result(statement):
     statement = statement.lower()
     prediction = modelPredictor.predict(statement)
-    equation = interpreter.interpret(prediction, statement)
+    equation = interpreter.interpret("ecuacion-implicita", statement) # TODO
     return equation
 
 
