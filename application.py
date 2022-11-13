@@ -14,6 +14,7 @@ import src.service as service
 def before_first_request():
     model.fit(X_train, y_train)
 
+
 @application.route('/', methods=["GET"])
 @swag_from('./config/swagger.yml')
 def helloworld():
@@ -29,10 +30,7 @@ def mathtranslation():
     input_json = request.get_json()  # get the json from the request
 
     text = input_json['text']
-    # FIXME
     if not is_valid_statement(text):
-        print("ES ENUNCIADO VALIDO?") # FIXME: BOrrar
-        print(is_valid_statement(text))
         return jsonify({"error": "Invalid input - A mathematical statement is required"}), 400
 
     try:
@@ -44,6 +42,7 @@ def mathtranslation():
     except:
         print("Error con el enunciado: ", text)
         return jsonify({"error": "An exception occurred"}), 404
+
 
 @application.route('/api/suggestions', methods=["POST"])
 @swag_from('./config/swagger.yml')

@@ -69,9 +69,6 @@ def is_valid_statement(statement):
 
 
 def has_numbers(statement):
-    search_digits = re.search(r'\d', statement)
-    print("search digits")
-    print(search_digits)
     return bool(re.search(r'\d', statement))
 
 
