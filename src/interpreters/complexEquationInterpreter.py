@@ -1,3 +1,4 @@
+import difflib
 import re
 
 import spacy
@@ -5,7 +6,7 @@ from recognizers_number import recognize_number, Culture
 
 import src.interpreters.addSubstractInterpreter as addSubstractInterpreter
 from src.interpreters.domain import Response
-from src.utils import string_is_numeric, is_negative_or_float_number
+from src.utils import string_is_numeric
 
 npl = spacy.load('es_core_news_lg')
 first_order_operators_dictionary = {"mayor o igual": ">=", "menor o igual": "<=", "igual": "=", "mayor": ">",
@@ -61,17 +62,20 @@ def search_math_term(sentence):
             if near_operator is not None:
                 return "operator", near_operator, "divisory"
     for word in dividing_by_proximity_words:
-        if word in statement.text:
+        if word in statement.text or search_near_operator_from_in(statement.text, # TODO: Agregado
+                                                                  dividing_by_proximity_words) is not None:
             start_index_word = statement.text.rfind(word)
             end_index_word = start_index_word + len(word)
             right_sentence = statement.text[end_index_word:-1]
             near_operator = find_near_operator(word, right_sentence)
             if near_operator is not None:
                 return "operator", near_operator, "divisory_proximity"
-    for operator in operators_dictionary.keys():
+    for operator in operators_dictionary.keys() or search_near_operator_from_in(statement.text, # TODO: Agregado
+                                                                                operators_dictionary) is not None:
         if operator in statement.text:
             word_type = "operator"
-            if operator in operators_left_dictionary_to_delegate_add_substract.keys():
+            if operator in operators_left_dictionary_to_delegate_add_substract.keys() or search_near_operator_from_in(statement.text,
+                                                                                                                      operators_left_dictionary_to_delegate_add_substract) is not None:
                 word_type = "operator_left_delegate_add_substract"
             elif operator in operators_left_dictionary.keys():
                 word_type = "operator_left"
@@ -148,6 +152,9 @@ class Node:
             return "(" + self.left_node.resolve() + " " + self.operator + " " + self.right_node.resolve() + ")"
 
 
+# TODO: search_near_operator_from_in(statement, operators_dictionary)
+
+
 def translate_statement(statement, tag):
     p1 = Node(statement)
     result = p1.resolve()
@@ -155,3 +162,19 @@ def translate_statement(statement, tag):
     if not any(word in first_order_operators_dictionary.values() for word in final_result):
         final_result = final_result + " = x"
     return Response(final_result, tag)
+
+
+def search_near_operator_from_in(statement, dictionary):
+    statement = npl(statement)
+    for token in statement:
+        print("BUSCO PARECIDOS")
+        print(token.text)
+        print("EN")
+        print(statement.text)
+        print(dictionary)
+        matches = difflib.get_close_matches(token.text, dictionary)
+        print("MATCHES")
+        print(matches)
+        if len(matches) >= 1:
+            return matches[0]
+    return None

@@ -1,7 +1,8 @@
 import src.interpreters.interpreter as interpreter
-import src.modelPredictor as modelPredictor
 import src.mathgenerators.mathgenerator as mathgenerator
+import src.modelPredictor as modelPredictor
 from src.utils import get_root_of_equation, get_exponent_of_equation
+
 
 def result(statement):
     statement = statement.lower()
@@ -9,7 +10,8 @@ def result(statement):
     equation = interpreter.interpret(prediction, statement)
     return equation
 
-def suggestions(equation, tag): 
+
+def suggestions(equation, tag):
     root = get_root_of_equation(equation)
     exponent = get_exponent_of_equation(equation).value
     exerciselist = []
@@ -18,5 +20,5 @@ def suggestions(equation, tag):
     for _ in range(3):
         similarexercise = mathgenerator.generate_exercise(exponent, tag).replace("=", root)
         exerciselist.append(similarexercise)
-    
+
     return exerciselist

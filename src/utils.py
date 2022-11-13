@@ -39,7 +39,11 @@ math_terms = ["funcion", "dominio", "imagen", "pendiente", "vertice", "ordenada 
               "ord. al origen", "o. al origen", "punto", "puntos"]
 
 
-def is_valid_statement(statement):
+def is_valid_statement2(statement):
+    return True
+
+
+def is_valid_statement(statement):  # FIXME
     statement = statement.lower()
     statement = unidecode.unidecode(statement)
     statement = npl(statement)
@@ -69,9 +73,6 @@ def is_valid_statement(statement):
 
 
 def has_numbers(statement):
-    search_digits = re.search(r'\d', statement)
-    print("search digits")
-    print(search_digits)
     return bool(re.search(r'\d', statement))
 
 
