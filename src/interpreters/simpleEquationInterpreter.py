@@ -27,7 +27,6 @@ def search_character(characters, statement):
 # Si viene algo como "Despeja x de tal ecuacion (...)" veo que el proximo caracter sea un caracter aceptado
 def following_characters_accepted(statement, index):
     accepted_characters = [*init_characters, *end_characters, "+", "-", "*", "/", "=", " ", ">", "<", "(", ")", "^"]
-    if index + 2 > len(statement) - 1 :
+    if index + 2 > len(statement) - 1:
         return True
     return statement[index + 1] in accepted_characters and statement[index + 2] in accepted_characters
-
