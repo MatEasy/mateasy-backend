@@ -11,7 +11,6 @@ def result(statement):
     statement = unidecode.unidecode(statement)
     statement = fix_near_operators(statement)
     prediction = modelPredictor.predict(statement)
-    print(prediction)
     equation = interpreter.interpret(prediction, statement)
     return equation
 
