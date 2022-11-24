@@ -1,13 +1,18 @@
+import unidecode
+
 import src.interpreters.interpreter as interpreter
 import src.mathgenerators.mathgenerator as mathgenerator
 import src.modelPredictor as modelPredictor
-from src.utils import get_root_of_equation, get_exponent_of_equation
+from src.utils import get_root_of_equation, get_exponent_of_equation, fix_near_operators
 
 
 def result(statement):
     statement = statement.lower()
+    statement = unidecode.unidecode(statement)
+    statement = fix_near_operators(statement)
     prediction = modelPredictor.predict(statement)
-    equation = interpreter.interpret("ecuacion-implicita", statement) # TODO
+    print(prediction)
+    equation = interpreter.interpret(prediction, statement)
     return equation
 
 
